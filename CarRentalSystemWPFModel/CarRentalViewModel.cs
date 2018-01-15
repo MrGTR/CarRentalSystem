@@ -19,7 +19,7 @@ namespace WPFModel
         #region Costructor
         public CarRentalViewModel()
         {
-         this._cars = LoadCars();
+            this._cars = LoadCars();
         }
         #endregion
 
@@ -80,7 +80,7 @@ namespace WPFModel
         {
             ObservableCollection<CarItem> items = new ObservableCollection<CarItem>();
 
-            List<Car> cars = CarFetcher.GetCars(this.MinPriceCars,this.MaxPriceCars,this.DbFactory);
+            List<Car> cars = CarFetcher.GetCars(this.MinPriceCars, this.MaxPriceCars, this.DbFactory);
 
             cars.ForEach(x => {
                 items.Add(new CarItem { Id = x.CarId, Brand = x.Brand, Name = x.Name, PriceByDay = x.PriceByDay });
@@ -95,14 +95,21 @@ namespace WPFModel
         private decimal? _max;
         public decimal MaxPriceCars
         {
-            get  { return _max ?? this._cars.Max(x => x.PriceByDay);}
+            get
+            {
+                return _max ?? (this._cars.Count > 0 ? this._cars.Max(x => x.PriceByDay) : 0);
+            }
             set { _max = value; }
         }
         private decimal? _min;
         public decimal MinPriceCars
         {
-            get { return _min ?? this._cars.Min(x=> x.PriceByDay); }
-            set { _min = value;}
+            get
+            {
+
+                return _min ?? (this._cars.Count > 0 ? this._cars.Min(x => x.PriceByDay) : 0);
+            }
+            set { _min = value; }
         }
         private CommandBase getCars;
         public CommandBase GetCars
@@ -127,7 +134,7 @@ namespace WPFModel
             get { return this.selectedCar; }
             set
             {
-                this.OnPropertyChanging(nameof(EnableBookinglist)); 
+                this.OnPropertyChanging(nameof(EnableBookinglist));
                 this.OnPropertyChanging(nameof(SelectedCar));
                 this.selectedCar = value;
                 GetBookingByCarId();
@@ -157,6 +164,8 @@ namespace WPFModel
         private void GetBookingByCarId()
         {
             OnPropertyChanging(nameof(Bookings));
+
+            if (this.selectedCar == null) return;
 
             this.booking.Clear();
             List<Booking> bookings = BookingFetcher.GetBookingByCarId(this.selectedCar.Id, this.DbFactory);
