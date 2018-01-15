@@ -50,12 +50,19 @@ namespace CarRentalSystem.Tests.Controllers
         [TestMethod]
         public void GetById()
         {
-            // Arrange
+
             CarController controller = new CarController();
-            // Act
-            Car result = controller.Get(4);
+            Car validationCar = controller.Get(paging_Index, 1).First();
+            Assert.IsNotNull(validationCar);
+
+            Car result = controller.Get(validationCar.CarId);
 
             Assert.IsNotNull(result);
+            Assert.AreEqual(result.CarId, validationCar.CarId);
+            Assert.AreEqual(result.Name, validationCar.Name);
+            Assert.AreEqual(result.Brand, validationCar.Brand);
+            Assert.AreEqual(result.PriceByDay, validationCar.PriceByDay);
+            Assert.AreEqual(result.IsObsolete, validationCar.IsObsolete);
         }
 
         [TestMethod]
